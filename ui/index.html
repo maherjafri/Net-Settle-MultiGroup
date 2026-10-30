@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Net-Settle | Smart Expense Manager</title>
+
+<style>
+:root {
+  --bg: #f6f7fc;
+  --card: #ffffff;
+  --text: #22283a;
+  --muted: #778096;
+  --border: #e6e9f2;
+  --primary: #5965d9;
+  --primary-light: #eff0ff;
+  --green: #178653;
+  --green-light: #e8f8ef;
+  --red: #c33e4c;
+  --red-light: #fff0f1;
+  --yellow: #926700;
+  --yellow-light: #fff5d9;
+  --shadow: 0 8px 28px rgba(37, 45, 80, 0.05);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at top left, #eceeff, transparent 35%),
+    var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+button, input, select { font: inherit; }
+
+button {
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--text);
+  border-radius: 9px;
+  padding: 10px 13px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  border-color: #c8ceec;
+  background: #f9f9ff;
+}
+
+button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 3px solid #5965d933;
+  border-color: var(--primary);
+}
+
+button.primary {
+  color: white;
+  background: var(--primary);
+  border-color: var(--primary);
+  font-weight: 650;
+}
+
+button.primary:hover {
+  background: #4652c5;
+  transform: translateY(-1px);
+}
+
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+input, select {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #dce0eb;
+  border-radius: 9px;
+  background: white;
+  color: var(--text);
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.app {
+  max-width: 1320px;
+  margin: auto;
+  padding: 24px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: rgba(255,255,255,.92);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 22px;
+}
+
+.brand {
+  font-size: 24px;
+  font-weight: 850;
+  letter-spacing: -1px;
+}
+
+.brand span { color: var(--primary); }
+
+.tagline { color: var(--muted); font-size: 13px; }
+
+.top-actions, .actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 245px minmax(0, 1fr);
+  gap: 20px;
+}
+
+.sidebar, .panel, .stat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+}
+
+.sidebar {
+  padding: 17px;
+  height: fit-content;
+  position: sticky;
+  top: 16px;
+}
+
+.section-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 7px 0 12px;
+}
+
+.group-list {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 15px;
+}
+
+.group-btn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  border-color: transparent;
+  border-radius: 9px;
+}
+
+.group-btn.active {
+  color: var(--primary);
+  background: var(--primary-light);
+  border-color: #dedfff;
+  font-weight: 750;
+}
+
+.side-form {
+  display: flex;
+  gap: 7px;
+}
+
+.side-form input { min-width: 0; }
+
+.small, .hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.main { min-width: 0; }
+
+.page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.page-head h1 {
+  margin: 0;
+  font-size: 27px;
+  letter-spacing: -0.8px;
+}
+
+.subtitle { color: var(--muted); font-size: 13px; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 13px;
+  margin-bottom: 17px;
+}
+
+.stat {
+  position: relative;
+  overflow: hidden;
+  padding: 17px;
+}
+
+.stat:after {
+  content: "";
+  position: absolute;
+  right: -18px;
+  top: -18px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: var(--primary-light);
+}
+
+.stat:nth-child(2):after { background: var(--green-light); }
+.stat:nth-child(3):after { background: var(--yellow-light); }
+.stat:nth-child(4):after { background: #f3eaff; }
+
+.stat-label {
+  position: relative;
+  z-index: 1;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.stat-value {
+  position: relative;
+  z-index: 1;
+  margin-top: 7px;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  overflow-wrap: anywhere;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.panel {
+  padding: 19px;
+  margin-bottom: 16px;
+  min-width: 0;
+}
+
+.panel h2 {
+  margin: 0 0 15px;
+  font-size: 16px;
+  letter-spacing: -0.2px;
+}
+
+.panel h2:before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  border-radius: 4px;
+  background: #bfc6ff;
+  margin-right: 9px;
+  vertical-align: -2px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.field.full { grid-column: 1 / -1; }
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 8px 10px;
+  background: #fafbff;
+  font-size: 13px;
+}
+
+.chip input {
+  width: auto;
+  margin: 0;
+  accent-color: var(--primary);
+}
+
+.chip:has(input:checked) {
+  background: var(--primary-light);
+  border-color: #cdd2ff;
+}
+
+.preview, .info-box {
+  background: #f6f7ff;
+  border: 1px solid #e5e7ff;
+  padding: 11px;
+  border-radius: 9px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 430px;
+}
+
+th, td {
+  text-align: left;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+th {
+  background: #f8f9fd;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+td { background: white; }
+tbody tr:hover td { background: #fcfcff; }
+tr:last-child td { border-bottom: 0; }
+
+.amount {
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.status {
+  display: inline-block;
+  border-radius: 99px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.paid { background: var(--green-light); color: var(--green); }
+.pending { background: var(--yellow-light); color: var(--yellow); }
+.owes { color: var(--red); }
+.receives { color: var(--green); }
+.settled { color: var(--muted); }
+
+.balance-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 10px;
+  border-bottom: 1px solid #edf0f6;
+  border-radius: 8px;
+}
+
+.balance-row:hover { background: #fafbff; }
+.balance-row:last-child { border-bottom: 0; }
+.row-title { font-weight: 700; }
+
+.btn-small {
+  padding: 6px 9px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.empty {
+  padding: 23px 14px;
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  color: var(--muted);
+  background: #fcfcff;
+}
+
+.overall-note {
+  padding: 12px;
+  margin-bottom: 13px;
+  background: #f5f6ff;
+  border: 1px solid #e5e7ff;
+  border-radius: 9px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.tabs {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.tabs button.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: #d5d9ff;
+  font-weight: 750;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
+  display: none;
+  max-width: calc(100vw - 40px);
+  background: #242a3d;
+  color: white;
+  padding: 13px 17px;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 950px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+  .group-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .columns { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+  .app { padding: 12px; }
+  .topbar { align-items: flex-start; flex-direction: column; padding: 15px; }
+  .page-head { align-items: flex-start; flex-direction: column; }
+  .form-grid { grid-template-columns: 1fr; }
+  .field.full { grid-column: auto; }
+  .stat { padding: 13px; }
+  .stat-value { font-size: 18px; }
+  .panel { padding: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *:before, *:after { transition: none !important; }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div>
+      <div class="brand">net<span>settle</span></div>
+      <div class="tagline">Shared expenses. Smarter settlements. Less confusion.</div>
+    </div>
+    <div class="top-actions">
+      <a href="/api/report.csv" style="text-decoration:none">
+        <button type="button">Export CSV</button>
+      </a>
+      <button type="button" onclick="loadState()">Refresh</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="section-label">Your groups</div>
+      <div id="groups" class="group-list"></div>
+
+      <form class="side-form" id="new-group">
+        <input id="group-name" placeholder="New group name" required maxlength="60">
+        <button class="primary" aria-label="Create group">+</button>
+      </form>
+
+      <p class="hint">Keep every group's expenses and debts separate, even when members overlap.</p>
+
+      <hr style="border:0;border-top:1px solid var(--border);margin:18px 0">
+
+      <div class="section-label">Quick guide</div>
+      <div class="small">
+        1. Create or select a group.<br><br>
+        2. Add members to the group.<br><br>
+        3. Record expenses and choose who paid.<br><br>
+        4. Calculate settlements and track payments.
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="page-head">
+        <div>
+          <h1 id="group-title">My Group</h1>
+          <div class="subtitle" id="group-sub">Group overview</div>
+        </div>
+        <div class="actions">
+          <button class="primary" onclick="recalculate()">Recalculate settlements</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Group spending</div>
+          <div class="stat-value" id="stat-total">₹0.00</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Members</div>
+          <div class="stat-value" id="stat-members">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Pending transfers</div>
+          <div class="stat-value" id="stat-pending">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Pending amount</div>
+          <div class="stat-value" id="stat-outstanding">₹0.00</div>
+        </div>
+      </div>
+
+      <div class="columns">
+        <section class="panel">
+          <h2>Add a member</h2>
+          <form id="member-form" class="form-grid">
+            <div class="field full">
+              <label for="member-name">Member name</label>
+              <input id="member-name" required maxlength="60" placeholder="e.g. Asha">
+            </div>
+            <div class="field full">
+              <button class="primary">Add to this group</button>
+            </div>
+          </form>
+          <p class="hint">The same person can belong to multiple groups.</p>
+          <div id="member-chips" class="checks"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Record an expense</h2>
+          <form id="expense-form" class="form-grid">
+            <div class="field">
+              <label for="payer">Who paid upfront?</label>
+              <select id="payer" required></select>
+            </div>
+
+            <div class="field">
+              <label for="amount">Amount (₹)</label>
+              <input id="amount" type="number" min="0.01" step="0.01" placeholder="0.00" required>
+            </div>
+
+            <div class="field">
+              <label for="description">Description</label>
+              <input id="description" placeholder="Groceries, taxi..." required maxlength="120">
+            </div>
+
+            <div class="field">
+              <label for="category">Category</label>
+              <select id="category">
+                <option>Food</option>
+                <option>Travel</option>
+                <option>Rent</option>
+                <option>Utilities</option>
+                <option>Shopping</option>
+                <option>Entertainment</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label>Split among</label>
+              <div id="participants" class="checks"></div>
+              <div id="split-preview" class="preview">
+                Select participants and enter an amount to preview the split.
+              </div>
+            </div>
+
+            <div class="field full">
+              <button class="primary" id="expense-submit">Save expense</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <div class="columns">
+        <section class="panel">
+          <h2>Group balances</h2>
+          <div id="balances"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Settlement plan</h2>
+          <p class="hint">
+            Mark a transfer paid after the payment has actually happened.
+          </p>
+          <div id="settlements"></div>
+        </section>
+      </div>
+
+      <section class="panel">
+        <div class="page-head">
+          <div>
+            <h2 style="margin:0">Expense history</h2>
+            <div class="hint">Search expenses by description, category or member.</div>
+          </div>
+          <div style="min-width:180px">
+            <input id="expense-search" placeholder="Search expenses...">
+          </div>
+        </div>
+        <div id="expenses" class="table-wrap"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Overall personal position</h2>
+        <div class="overall-note">
+          Informational only: debts in separate groups are not automatically cancelled against each other.
+        </div>
+        <div class="tabs">
+          <button id="tab-net" class="active" onclick="setOverallMode('net')">Net position</button>
+          <button id="tab-groups" onclick="setOverallMode('groups')">Group-by-group</button>
+        </div>
+        <div id="overall"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+let S = null;
+let activeId = null;
+let overallMode = "net";
+let payerChoice = "";
+let participantChoice = new Set();
+
+const $ = id => document.getElementById(id);
+
+function money(paise) {
+  return "₹" + (Number(paise || 0) / 100).toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[char]));
+}
+
+function active() {
+  return S?.groups.find(group => group.id === activeId) || S?.groups[0];
+}
+
+function toast(message) {
+  $("toast").textContent = message;
+  $("toast").style.display = "block";
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(() => {
+    $("toast").style.display = "none";
+  }, 2800);
+}
+
+async function api(path, body) {
+  const response = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Request failed");
+  }
+
+  return data;
+}
+
+async function loadState(id = activeId) {
+  try {
+    const url = "/api/state" + (id ? "?group=" + encodeURIComponent(id) : "");
+    const response = await fetch(url, { cache: "no-store" });
+
+    if (!response.ok) {
+      throw new Error("Could not load project data.");
+    }
+
+    S = await response.json();
+    activeId = S.active_group_id;
+    render();
+  } catch (error) {
+    toast(error.message + " Make sure the Python server is running.");
+  }
+}
+
+function render() {
+  if (!S) return;
+
+  renderGroups();
+
+  const group = active();
+  if (!group) return;
+
+  $("group-title").textContent = group.name;
+  $("group-sub").textContent =
+    `${group.members.length} members · ${group.expenses.length} expenses`;
+
+  $("stat-total").textContent = money(group.total_expense);
+  $("stat-members").textContent = group.members.length;
+
+  $("stat-pending").textContent =
+    group.settlements.filter(item => !item.paid).length;
+
+  $("stat-outstanding").textContent = money(group.pending_total);
+
+  renderMembers(group);
+  renderBalances(group);
+  renderSettlements(group);
+  renderExpenses(group);
+  renderOverall();
+}
+
+function renderGroups() {
+  $("groups").innerHTML = S.groups.map(group => `
+    <button type="button"
+      class="group-btn ${group.id === activeId ? "active" : ""}"
+      onclick="switchGroup('${esc(group.id)}')">
+      <span>${esc(group.name)}</span>
+      <span class="small">${group.members.length}</span>
+    </button>
+  `).join("") || '<div class="empty">Create your first group.</div>';
+}
+
+function switchGroup(id) {
+  payerChoice = $("payer").value || payerChoice;
+
+  participantChoice = new Set(
+    [...document.querySelectorAll("#participants input:checked")]
+      .map(input => input.value)
+  );
+
+  activeId = id;
+  loadState(id);
+}
+
+function renderMembers(group) {
+  $("member-chips").innerHTML = group.members.map(member => `
+    <span class="chip">${esc(member)}</span>
+  `).join("") || '<span class="hint">No members added yet.</span>';
+
+  const oldPayer = payerChoice || $("payer").value;
+
+  $("payer").innerHTML = group.members.map(member => `
+    <option value="${esc(member)}">${esc(member)}</option>
+  `).join("");
+
+  if (group.members.includes(oldPayer)) {
+    $("payer").value = oldPayer;
+  } else if (group.members.length) {
+    $("payer").selectedIndex = 0;
+  }
+
+  payerChoice = $("payer").value;
+
+  $("participants").innerHTML = group.members.map(member => {
+    const checked = participantChoice.size
+      ? participantChoice.has(member)
+      : true;
+
+    return `
+      <label class="chip">
+        <input type="checkbox"
+          value="${esc(member)}"
+          ${checked ? "checked" : ""}
+          onchange="participantChanged()">
+        ${esc(member)}
+      </label>
+    `;
+  }).join("") || '<span class="hint">Add members first.</span>';
+
+  renderSplitPreview();
+}
+
+function participantChanged() {
+  participantChoice = new Set(
+    [...document.querySelectorAll("#participants input:checked")]
+      .map(input => input.value)
+  );
+
+  renderSplitPreview();
+}
+
+function renderSplitPreview() {
+  const amount = Number($("amount").value || 0);
+  const count = document.querySelectorAll("#participants input:checked").length;
+
+  $("split-preview").textContent =
+    count && amount > 0
+      ? `${count} participant(s) · approximately ${money(Math.round(amount * 100 / count))} per person`
+      : "Select participants and enter an amount to preview the split.";
+}
+
+function renderBalances(group) {
+  $("balances").innerHTML = group.balances.map(balance => `
+    <div class="balance-row">
+      <div>
+        <div class="row-title">${esc(balance.name)}</div>
+        <div class="hint ${esc(balance.status)}">
+          ${
+            balance.status === "owes"
+              ? "Needs to pay"
+              : balance.status === "receives"
+                ? "Should receive"
+                : "Settled"
+          }
+        </div>
+      </div>
+      <div class="amount ${esc(balance.status)}">
+        ${
+          balance.status === "owes"
+            ? "−"
+            : balance.status === "receives"
+              ? "+"
+              : ""
+        }${money(balance.paise)}
+      </div>
+    </div>
+  `).join("") || '<div class="empty">Add members to see balances.</div>';
+}
+
+function renderSettlements(group) {
+  $("settlements").innerHTML = group.settlements.length
+    ? `
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Payment</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${group.settlements.map(settlement => `
+              <tr>
+                <td><b>${esc(settlement.from)} → ${esc(settlement.to)}</b></td>
+                <td class="amount">${esc(settlement.amount_text)}</td>
+                <td>
+                  <span class="status ${settlement.paid ? "paid" : "pending"}">
+                    ${settlement.paid ? "Paid" : "Pending"}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn-small"
+                    onclick="markPaid('${esc(settlement.id)}', ${!settlement.paid})">
+                    ${settlement.paid ? "Undo" : "Mark paid"}
+                  </button>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `
+    : '<div class="empty">No transfers to display. Add expenses and recalculate settlements.</div>';
+}
+
+function renderExpenses(group) {
+  const query = $("expense-search").value.toLowerCase();
+
+  const expenses = group.expenses.filter(expense => {
+    const searchable = [
+      expense.description,
+      expense.category,
+      expense.payer,
+      ...(expense.participants || [])
+    ].join(" ").toLowerCase();
+
+    return searchable.includes(query);
+  });
+
+  $("expenses").innerHTML = expenses.length
+    ? `
+      <table>
+        <thead>
+          <tr>
+            <th>Expense</th>
+            <th>Paid by</th>
+            <th>Participants</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${expenses.map(expense => `
+            <tr>
+              <td>
+                <b>${esc(expense.description)}</b>
+                <div class="hint">${esc(expense.category)}</div>
+              </td>
+              <td>${esc(expense.payer)}</td>
+              <td>${(expense.participants || []).map(esc).join(", ")}</td>
+              <td class="amount">${esc(expense.amount_text)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `
+    : '<div class="empty">No matching expenses found.</div>';
+}
+
+function renderOverall() {
+  $("tab-net").classList.toggle("active", overallMode === "net");
+  $("tab-groups").classList.toggle("active", overallMode === "groups");
+
+  if (overallMode === "net") {
+    $("overall").innerHTML = S.overall.map(balance => `
+      <div class="balance-row">
+        <div>
+          <div class="row-title">${esc(balance.name)}</div>
+          <div class="hint ${esc(balance.status)}">
+            ${
+              balance.status === "owes"
+                ? "Net amount to pay"
+                : balance.status === "receives"
+                  ? "Net amount to receive"
+                  : "Net settled"
+            }
+          </div>
+        </div>
+        <div class="amount ${esc(balance.status)}">
+          ${
+            balance.status === "owes"
+              ? "−"
+              : balance.status === "receives"
+                ? "+"
+                : ""
+          }${money(balance.paise)}
+        </div>
+      </div>
+    `).join("") || '<div class="empty">No group members yet.</div>';
+
+    return;
+  }
+
+  $("overall").innerHTML = S.groups.map(group => `
+    <div class="balance-row">
+      <div>
+        <div class="row-title">${esc(group.name)}</div>
+        <div class="hint">
+          ${group.balances.map(balance => {
+            const status =
+              balance.status === "owes"
+                ? "owes "
+                : balance.status === "receives"
+                  ? "receives "
+                  : "settled ";
+
+            return `${esc(balance.name)}: ${status}${money(balance.paise)}`;
+          }).join(" · ") || "No members"}
+        </div>
+      </div>
+    </div>
+  `).join("") || '<div class="empty">No groups created yet.</div>';
+}
+
+function setOverallMode(mode) {
+  overallMode = mode;
+  renderOverall();
+}
+
+async function submitForm(path, body) {
+  try {
+    const data = await api(path, body);
+    S = data;
+    activeId = data.active_group_id;
+    render();
+    toast("Saved successfully.");
+    return true;
+  } catch (error) {
+    toast(error.message);
+    return false;
+  }
+}
+
+$("new-group").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const name = $("group-name").value.trim();
+  if (!name) return;
+
+  const success = await submitForm("/api/groups", { name });
+
+  if (success) $("group-name").value = "";
+});
+
+$("member-form").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const name = $("member-name").value.trim();
+  if (!name) return;
+
+  const success = await submitForm("/api/members", {
+    name,
+    group_id: activeId
+  });
+
+  if (success) {
+    $("member-name").value = "";
+    payerChoice = "";
+    participantChoice = new Set();
+  }
+});
+
+$("expense-form").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const participants = [
+    ...document.querySelectorAll("#participants input:checked")
+  ].map(input => input.value);
+
+  if (!participants.length) {
+    toast("Select at least one participant.");
+    return;
+  }
+
+  const amount = Number($("amount").value);
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    toast("Enter a valid expense amount.");
+    return;
+  }
+
+  const body = {
+    group_id: activeId,
+    payer: $("payer").value,
+    amount: amount.toFixed(2),
+    description: $("description").value.trim(),
+    category: $("category").value,
+    participants
+  };
+
+  if (!body.description) {
+    toast("Enter an expense description.");
+    return;
+  }
+
+  const success = await submitForm("/api/expenses", body);
+
+  if (success) {
+    $("amount").value = "";
+    $("description").value = "";
+    participantChoice = new Set();
+    renderMembers(active());
+  }
+});
+
+$("amount").addEventListener("input", renderSplitPreview);
+
+$("expense-search").addEventListener("input", () => {
+  if (active()) renderExpenses(active());
+});
+
+$("payer").addEventListener("change", () => {
+  payerChoice = $("payer").value;
+});
+
+async function markPaid(id, paid) {
+  await submitForm("/api/settlements/paid", {
+    group_id: activeId,
+    settlement_id: id,
+    paid
+  });
+}
+
+async function recalculate() {
+  await submitForm("/api/settlements/recalculate", {
+    group_id: activeId
+  });
+}
+
+loadState();
+</script>
+</body>
+</html>

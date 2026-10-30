@@ -1,0 +1,81 @@
+{
+  "version": 2,
+  "members": [
+    "shreya",
+    "maher",
+    "arya",
+    "harshit",
+    "hrishav",
+    "darshan",
+    "jeswin"
+  ],
+  "groups": [
+    {
+      "id": "default",
+      "name": "My Group",
+      "members": [
+        "maher",
+        "shreya",
+        "darshan",
+        "jeswin",
+        "harshit"
+      ],
+      "expenses": [
+        {
+          "id": "df43feb911244736a1f687314eb128ca",
+          "payer": "maher",
+          "amount": 300000,
+          "description": "cab",
+          "category": "Travel",
+          "participants": [
+            "maher",
+            "shreya",
+            "darshan",
+            "jeswin",
+            "harshit"
+          ],
+          "created_at": "2026-10-29T18:48:47"
+        }
+      ],
+      "settlements": []
+    },
+    {
+      "id": "9c9fda3dd21f44dab9018f1f968e2548",
+      "name": "Trip to pune",
+      "members": [
+        "maher",
+        "shreya",
+        "harshit",
+        "hrishav"
+      ],
+      "expenses": [
+        {
+          "id": "76178c6483a14be9a660c4ea8576456f",
+          "payer": "maher",
+          "amount": 100000,
+          "description": "train food",
+          "category": "Food",
+          "participants": [
+            "maher",
+            "shreya",
+            "harshit",
+            "hrishav"
+          ],
+          "created_at": "2026-10-29T18:48:23"
+        }
+      ],
+      "settlements": []
+    },
+    {
+      "id": "22e20379f4a74959888039eff3588dc1",
+      "name": "Flatmate",
+      "members": [
+        "shreya",
+        "maher",
+        "arya"
+      ],
+      "expenses": [],
+      "settlements": []
+    }
+  ]
+}
